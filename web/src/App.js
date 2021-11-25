@@ -5,23 +5,16 @@ import "./App.css";
 
 import contractMeta from "./contract_meta.json";
 
-const CONTRACT_ADDRESS = "0x7675D4869126575d393DC295166de1d7624f3A46";
+const CONTRACT_ADDRESS = "0x528EE74F2D2d0C029BDAaafc0c3a367f91c6ce25";
 
 export default function App() {
 
   const [currentAccount, setCurrentAccount] = useState("");
 
+  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [waves, setWaves] = useState([]);
 
-  const setQueryWavesInterval = () => {
-    // Query waves every 3 sec
-    setInterval(function() {
-      if (currentAccount && currentAccount !== "") {
-        queryWaves();
-      }
-    }, 3000);
-  }
+  const [allWaves, setAllWaves] = useState([]);
 
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -31,6 +24,9 @@ export default function App() {
       console.log("Make sure you have metamask!");
       return;
     }
+
+    // Query waves 
+    getAllWaves();
 
     try {
       // Get connected accounts
@@ -48,9 +44,6 @@ export default function App() {
 
       // Update state
       setCurrentAccount(account);
-
-      // Query waves
-      queryWaves();
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +51,6 @@ export default function App() {
 
   // This runs our function when the page loads
   useEffect(() => {
-    setQueryWavesInterval();
     checkIfWalletIsConnected();
   });
 
@@ -84,19 +76,32 @@ export default function App() {
       setCurrentAccount(account);
 
       // Query waves
-      queryWaves();
+      getAllWaves();
     } catch (error) {
       console.log(error);
     }
   }
 
-  const queryWaves = async () => {
+  const getAllWaves = async () => {
     try {
       // Get contract
       const wavePortalContract = createContract();
 
       // Get waves from contract
-      setWaves(await wavePortalContract.getWaves());
+      const waves = await wavePortalContract.getAllWaves();
+      
+      // Convert objects
+      let wavesCleaned = [];
+      waves.forEach(wave => {
+        wavesCleaned.push({
+          address: wave.waver,
+          timestamp: new Date(wave.timestamp * 1000),
+          message: wave.message
+        });
+      });
+
+      // Update state
+      setAllWaves(wavesCleaned);
     } catch (error) {
       console.log(error);
     }
@@ -108,18 +113,22 @@ export default function App() {
       const wavePortalContract = createContract();
 
       // Execute the actual wave on contract
-      const waveTxn = await wavePortalContract.wave();
+      const waveTxn = await wavePortalContract.wave(message);
 
       // Wait for mining of transaction
       console.log("Mining...", waveTxn.hash);
       setIsLoading(true);
       await waveTxn.wait();
+      setMessage("");
       setIsLoading(false);
       console.log("Mined -- ", waveTxn.hash);
 
       // Get wave count from contract
       let count = await wavePortalContract.getTotalWaveCount();
       console.log("Retrieved total wave count...", count.toNumber());
+
+      // Query waves
+      getAllWaves();
     } catch (error) {
       console.log(error);
     }
@@ -142,38 +151,59 @@ export default function App() {
       return (<p>none</p>);
     }
 
-    const listItems = waves.map((wave, i) => <li key={i}>{wave.sender}</li>);
+    const items = waves.map((wave, index) =>
+      <div key={index} className="recentWaveContainer">
+        <p>{wave.address}</p>
+        <p>({wave.timestamp.toLocaleString("en-US")})</p>
+        <p>Message: {wave.message}</p>
+      </div>
+    );
 
-    return (<ul>{listItems}</ul>);
+    return (<div>{items}</div>);
+  }
+
+  function handleMessageChange(event) {
+    setMessage(event.target.value);
   }
   
   return (
     <div className="mainContainer">
-
-      <div className="dataContainer">
+      <div className="contentContainer">
         <h1>👋 Hey there!</h1>
 
         <p>
-          I am Matt. I just started to learn Web3 development, so that's pretty cool right? Connect
-          your Ethereum wallet and wave at me!
+          I am Matt. I just started to learn Web3 development, so that's pretty cool right? Connect your Ethereum wallet and wave at me!
         </p>
 
         {!currentAccount && (
-          <button onClick={connectWallet}>Connect Wallet</button>
+          <div className="connectWalletContainer">
+            <button onClick={connectWallet}>Connect Wallet</button>
+          </div>
         )}
 
         {currentAccount && (
-          <button className="colorized" onClick={wave}>Wave at Me</button>
-        )}
-        
-        {isLoading && (
-          <div className="loader" />
+          <div className="sendMessageContainer">
+            <textarea
+              type="text"
+              placeholder="Your message"
+              rows="5"
+              onChange={handleMessageChange}
+            />
+
+            <button className="colorized" disabled={message === ""} onClick={wave}>
+              Wave at Me
+            </button>
+            
+            {isLoading && (
+              <div className="loader" />
+            )}
+          </div>
         )}
 
         {currentAccount && (
-          <div className="recentWavers">
-            <h2>Recent Wavers</h2>
-            <WaveList waves={waves} />
+          <div className="recentWavesContainer">
+            <h2>Recent Waves</h2>
+            <WaveList waves={allWaves} />
           </div>
         )}
       </div>

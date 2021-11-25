@@ -12,47 +12,63 @@ h2 {
 p {
   text-align: center;
   color: gray;
-  margin-top: 16px;
+  line-height: 1.5;
 }
 
-button {
-  cursor: pointer;
-  margin-top: 16px;
-  padding: 8px;
-  border: 0;
+textarea {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 6px;
+  resize: none;
+  font-size: 16px;
   border-radius: 5px;
 }
 
+button {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-style: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 .mainContainer {
-  display: flex;
-  justify-content: center;
   width: 100%;
   margin-top: 64px;
 }
 
-.dataContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.contentContainer {
+  margin: auto;
   max-width: 600px;
 }
 
-.recentWavers {
+.connectWalletContainer {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  margin-top: 16px;
 }
 
-.recentWavers > ul {
-  align-self: center;
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
+.sendMessageContainer {
+  display: flex;
+  flex-direction: column;
 }
 
-.recentWavers > ul > li {
-  padding: 4px;
+.recentWavesContainer {
+  margin-top: 38px;
+}
+
+.recentWaveContainer {
+  display: inline-block;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border-style: dashed;
+  border-width: 1px;
+  border-radius: 5px;
+}
+
+.recentWaveContainer > p {
+  margin: 8px;
 }
 
 .colorized {
@@ -60,10 +76,9 @@ button {
 }
 
 .loader {
-  align-self: center;
-  margin: 10px;
   width: 20px;
   height: 20px;
+  margin: 10px;
   border: 4px solid rgb(34, 168, 235);
   border-top: 4px solid  rgb(44, 235, 114);
   border-radius: 50%;

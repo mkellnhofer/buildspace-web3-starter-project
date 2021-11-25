@@ -6,26 +6,36 @@ import "hardhat/console.sol";
 
 contract WavePortal {
 
-    event NewWave(address sender, uint timestamp);
+    uint private prizeAmount = 0.0001 ether;
+
+    event NewWave(address indexed from, uint timestamp, string message);
 
     struct Wave {
-      address sender;
-      uint timestamp;
+        address waver;
+        string message;
+        uint timestamp;
     }
 
     Wave[] waves;
 
-    constructor() {
+    constructor() payable {
         console.log("Servus, I am a contract and I am smart!");
     }
 
-    function wave() public {
+    function wave(string memory _message) public {
         console.log("%s has waved!", msg.sender);
-        waves.push(Wave(msg.sender, block.timestamp));
-        emit NewWave(msg.sender, block.timestamp);
+
+        waves.push(Wave(msg.sender, _message, block.timestamp));
+
+        emit NewWave(msg.sender, block.timestamp, _message);
+
+        require(address(this).balance >= prizeAmount, "Contract has no more money.");
+
+        (bool success,) = (msg.sender).call{value: prizeAmount}("");
+        require(success, "Could not withdraw money from contract.");
     }
 
-    function getWaves() public view returns (Wave[] memory) {
+    function getAllWaves() public view returns (Wave[] memory) {
         return waves;
     }
 
