@@ -1,6 +1,6 @@
 h1 {
   text-align: center;
-  font-size: 32px;
+  font-size: 38px;
   font-weight: 600;
 }
 
@@ -11,6 +11,7 @@ h2 {
 
 p {
   text-align: center;
+  font-size: 16px;
   color: gray;
   line-height: 1.5;
 }
@@ -31,6 +32,21 @@ button {
   border-style: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.smallText {
+  font-size: 10px;
+}
+
+.colorizedText {
+  color: rgb(34, 168, 235);
+  background-image: linear-gradient(270deg, rgb(44, 235, 114), rgb(34, 168, 235));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.colorizedBg {
+  background: linear-gradient(270deg, rgb(44, 235, 114), rgb(34, 168, 235));
 }
 
 .mainContainer {
@@ -71,11 +87,8 @@ button {
   margin: 8px;
 }
 
-.colorized {
-  background: linear-gradient(270deg, rgb(44, 235, 114), rgb(34, 168, 235));
-}
-
 .loader {
+  align-self: center;
   width: 20px;
   height: 20px;
   margin: 10px;

@@ -4,3 +4,6 @@
 # Hardhat
 /cache
 /artifacts
+
+# Env file
+.env

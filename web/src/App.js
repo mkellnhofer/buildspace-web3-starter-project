@@ -107,6 +107,43 @@ export default function App() {
     }
   }
 
+  const onNewWaveHandler = (from, timestamp, message) => {
+    console.log("NewWave", from, timestamp, message);
+    setAllWaves(prevState => [
+      ...prevState,
+      {
+        address: from,
+        timestamp: new Date(timestamp * 1000),
+        message: message,
+      },
+    ]);
+  };
+
+  const registerOnNewWaveHandler = () => {
+    const { ethereum } = window;
+
+    // Check if we have access to window.ethereum
+    if (!ethereum) {
+      return () => {};
+    }
+
+    // Get contract
+    const wavePortalContract = createContract();
+
+    // Subscribe event 'NewWave'
+    wavePortalContract.on("NewWave", onNewWaveHandler);
+
+    return () => {
+      // Unsubscribe event 'NewWave'
+      wavePortalContract.off("NewWave", onNewWaveHandler);
+    };
+  }
+
+  // This runs our function when the page loads
+  useEffect(() => {
+    registerOnNewWaveHandler();
+  });
+
   const wave = async () => {
     try {
       // Get contract
@@ -126,9 +163,6 @@ export default function App() {
       // Get wave count from contract
       let count = await wavePortalContract.getTotalWaveCount();
       console.log("Retrieved total wave count...", count.toNumber());
-
-      // Query waves
-      getAllWaves();
     } catch (error) {
       console.log(error);
     }
@@ -169,11 +203,14 @@ export default function App() {
   return (
     <div className="mainContainer">
       <div className="contentContainer">
-        <h1>👋 Hey there!</h1>
+        <h1>👋 <span className="colorizedText">Servus!</span></h1>
 
         <p>
-          I am Matt. I just started to learn Web3 development, so that's pretty cool right? Connect your Ethereum wallet and wave at me!
+          I am Matt. I just started to learn Web3 development, so that's pretty cool right? Connect
+          your Ethereum wallet and wave at me!
         </p>
+
+        <p className="smallText">You can win some Ether! Don't tell anybody! 🤫</p>
 
         {!currentAccount && (
           <div className="connectWalletContainer">
@@ -187,10 +224,15 @@ export default function App() {
               type="text"
               placeholder="Your message"
               rows="5"
+              disabled={isLoading}
               onChange={handleMessageChange}
+              value={message}
             />
 
-            <button className="colorized" disabled={message === ""} onClick={wave}>
+            <button
+              className="colorizedBg"
+              disabled={message === "" || isLoading}
+              onClick={wave}>
               Wave at Me
             </button>
             
