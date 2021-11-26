@@ -7,8 +7,7 @@ import contractMeta from "./contract_meta.json";
 
 const CONTRACT_ADDRESS = "0x528EE74F2D2d0C029BDAaafc0c3a367f91c6ce25";
 
-export default function App() {
-
+const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
 
   const [message, setMessage] = useState("");
@@ -49,10 +48,10 @@ export default function App() {
     }
   }
 
-  // This runs our function when the page loads
   useEffect(() => {
     checkIfWalletIsConnected();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const connectWallet = async () => {
     const { ethereum } = window;
@@ -107,6 +106,30 @@ export default function App() {
     }
   }
 
+  const createWave = async () => {
+    try {
+      // Get contract
+      const wavePortalContract = createContract();
+
+      // Execute the actual wave on contract
+      const waveTxn = await wavePortalContract.wave(message);
+
+      // Wait for mining of transaction
+      console.log("Mining...", waveTxn.hash);
+      setIsLoading(true);
+      await waveTxn.wait();
+      setMessage("");
+      setIsLoading(false);
+      console.log("Mined -- ", waveTxn.hash);
+
+      // Get wave count from contract
+      let count = await wavePortalContract.getTotalWaveCount();
+      console.log("Retrieved total wave count...", count.toNumber());
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const onNewWaveHandler = (from, timestamp, message) => {
     console.log("NewWave", from, timestamp, message);
     setAllWaves(prevState => [
@@ -137,36 +160,12 @@ export default function App() {
       // Unsubscribe event 'NewWave'
       wavePortalContract.off("NewWave", onNewWaveHandler);
     };
-  }
+  };
 
-  // This runs our function when the page loads
   useEffect(() => {
     registerOnNewWaveHandler();
-  });
-
-  const wave = async () => {
-    try {
-      // Get contract
-      const wavePortalContract = createContract();
-
-      // Execute the actual wave on contract
-      const waveTxn = await wavePortalContract.wave(message);
-
-      // Wait for mining of transaction
-      console.log("Mining...", waveTxn.hash);
-      setIsLoading(true);
-      await waveTxn.wait();
-      setMessage("");
-      setIsLoading(false);
-      console.log("Mined -- ", waveTxn.hash);
-
-      // Get wave count from contract
-      let count = await wavePortalContract.getTotalWaveCount();
-      console.log("Retrieved total wave count...", count.toNumber());
-    } catch (error) {
-      console.log(error);
-    }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function createContract() {
     // Get Web3 provider/signer
@@ -178,6 +177,10 @@ export default function App() {
     return new ethers.Contract(CONTRACT_ADDRESS, contractMeta.abi, signer);
   }
 
+  const handleMessageChange = (event) => {
+    setMessage(event.target.value);
+  }
+
   function WaveList(props) {
     const waves = props.waves;
 
@@ -186,40 +189,36 @@ export default function App() {
     }
 
     const items = waves.map((wave, index) =>
-      <div key={index} className="recentWaveContainer">
-        <p>{wave.address}</p>
-        <p>({wave.timestamp.toLocaleString("en-US")})</p>
-        <p>Message: {wave.message}</p>
+      <div key={index} className="recent-wave-container">
+        <p className="recent-wave-address">{wave.address}</p>
+        <p className="recent-wave-time">({wave.timestamp.toLocaleString("en-US")})</p>
+        <p>{wave.message}</p>
       </div>
     );
 
     return (<div>{items}</div>);
   }
-
-  function handleMessageChange(event) {
-    setMessage(event.target.value);
-  }
   
   return (
-    <div className="mainContainer">
-      <div className="contentContainer">
-        <h1>👋 <span className="colorizedText">Servus!</span></h1>
+    <div className="main-container">
+      <div className="content-container">
+        <h1>👋 <span className="colorized-text">Hello!</span></h1>
 
         <p>
           I am Matt. I just started to learn Web3 development, so that's pretty cool right? Connect
           your Ethereum wallet and wave at me!
         </p>
 
-        <p className="smallText">You can win some Ether! Don't tell anybody! 🤫</p>
+        <p className="small-text">You can win some Ether! Don't tell anybody! 🤫</p>
 
         {!currentAccount && (
-          <div className="connectWalletContainer">
+          <div className="connect-wallet-container">
             <button onClick={connectWallet}>Connect Wallet</button>
           </div>
         )}
 
         {currentAccount && (
-          <div className="sendMessageContainer">
+          <div className="send-message-container">
             <textarea
               type="text"
               placeholder="Your message"
@@ -230,9 +229,9 @@ export default function App() {
             />
 
             <button
-              className="colorizedBg"
+              className="colorized-bg"
               disabled={message === "" || isLoading}
-              onClick={wave}>
+              onClick={createWave}>
               Wave at Me
             </button>
             
@@ -243,12 +242,21 @@ export default function App() {
         )}
 
         {currentAccount && (
-          <div className="recentWavesContainer">
+          <div className="recent-waves-container">
             <h2>Recent Waves</h2>
             <WaveList waves={allWaves} />
           </div>
         )}
+
+        <div className="about-container">
+          <p>
+            <span>build with 🦄 </span>
+            <a href="https://buildspace.so" className="colorized-text">buildspace</a>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
+
+export default App;
