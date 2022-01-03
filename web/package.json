@@ -2,6 +2,7 @@
   "name": "wave-portal",
   "description": "A small project used to learn Web3 development.",
   "version": "1.0.0",
+  "homepage": "https://mkellnhofer.github.io/buildspace-web3-starter-project/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build"
