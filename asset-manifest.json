@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/buildspace-web3-starter-project/static/css/main.819a4867.chunk.css",
+    "main.js": "/buildspace-web3-starter-project/static/js/main.76557398.chunk.js",
+    "main.js.map": "/buildspace-web3-starter-project/static/js/main.76557398.chunk.js.map",
+    "runtime-main.js": "/buildspace-web3-starter-project/static/js/runtime-main.48483b29.js",
+    "runtime-main.js.map": "/buildspace-web3-starter-project/static/js/runtime-main.48483b29.js.map",
+    "static/js/2.16293a9b.chunk.js": "/buildspace-web3-starter-project/static/js/2.16293a9b.chunk.js",
+    "static/js/2.16293a9b.chunk.js.map": "/buildspace-web3-starter-project/static/js/2.16293a9b.chunk.js.map",
+    "index.html": "/buildspace-web3-starter-project/index.html",
+    "static/css/main.819a4867.chunk.css.map": "/buildspace-web3-starter-project/static/css/main.819a4867.chunk.css.map",
+    "static/js/2.16293a9b.chunk.js.LICENSE.txt": "/buildspace-web3-starter-project/static/js/2.16293a9b.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.48483b29.js",
+    "static/js/2.16293a9b.chunk.js",
+    "static/css/main.819a4867.chunk.css",
+    "static/js/main.76557398.chunk.js"
+  ]
+}
